@@ -1,33 +1,42 @@
 import { useState } from "react";
 
-export default function AddTaskForm({ refresh }) {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    priority: "low",
-    dueDate: "",
-  });
+const API_URL = "http://localhost:5000/api/tasks";
 
-  const submit = async () => {
-    await fetch("http://localhost:5000/api/tasks", {
+export default function AddTaskForm({ refresh }) {
+  const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState("low");
+
+  const submitTask = async () => {
+    if (!title.trim()) {
+      alert("Task title required");
+      return;
+    }
+
+    await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ title, priority })
     });
+
+    setTitle("");
     refresh();
   };
 
   return (
-    <>
-      <input placeholder="Title" onChange={e => setForm({ ...form, title: e.target.value })} />
-      <textarea placeholder="Description" onChange={e => setForm({ ...form, description: e.target.value })} />
-      <select onChange={e => setForm({ ...form, priority: e.target.value })}>
-        <option>low</option>
-        <option>medium</option>
-        <option>high</option>
+    <div style={{ marginBottom: "15px" }}>
+      <input
+        placeholder="Enter task title"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+      />
+
+      <select onChange={e => setPriority(e.target.value)}>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
       </select>
-      <input type="date" onChange={e => setForm({ ...form, dueDate: e.target.value })} />
-      <button onClick={submit}>Add Task</button>
-    </>
+
+      <button onClick={submitTask}>Add</button>
+    </div>
   );
 }

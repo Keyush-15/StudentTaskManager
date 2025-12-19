@@ -1,7 +1,15 @@
-import TaskCard from "./TaskCard";
+import TaskItem from "./TaskItems";
 
 export default function TaskList({ tasks, refresh }) {
-  return tasks.map(task => (
-    <TaskCard key={task._id} task={task} refresh={refresh} />
-  ));
+  if (tasks.length === 0) {
+    return <p>No tasks yet. Click “Add” to create one.</p>;
+  }
+
+  return (
+    <>
+      {tasks.map(task => (
+        <TaskItem key={task._id} task={task} refresh={refresh} />
+      ))}
+    </>
+  );
 }

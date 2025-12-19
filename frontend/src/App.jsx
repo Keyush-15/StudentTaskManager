@@ -3,31 +3,33 @@ import AddTaskForm from "./components/AddTaskForm";
 import TaskList from "./components/TaskList";
 import FilterBar from "./components/FilterBar";
 
-function App() {
+const API_URL = "http://localhost:5000/api/tasks";
+
+export default function App() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [sort, setSort] = useState("");
 
   const fetchTasks = async () => {
-    const res = await fetch(
-      `http://localhost:5000/api/tasks?status=${filter}&sort=${sort}`
-    );
+    let url = API_URL;
+    if (filter === "completed") url += "?status=completed";
+    if (filter === "pending") url += "?status=pending";
+
+    const res = await fetch(url);
     const data = await res.json();
     setTasks(data);
   };
 
   useEffect(() => {
     fetchTasks();
-  }, [filter, sort]);
+  }, [filter]);
 
   return (
-    <>
+    <div className="app-container">
       <h1>Student Task Manager</h1>
+
       <AddTaskForm refresh={fetchTasks} />
-      <FilterBar setFilter={setFilter} setSort={setSort} />
+      <FilterBar setFilter={setFilter} />
       <TaskList tasks={tasks} refresh={fetchTasks} />
-    </>
+    </div>
   );
 }
-
-export default App;
